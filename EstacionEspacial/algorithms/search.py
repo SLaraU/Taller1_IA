@@ -28,16 +28,60 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    # TODO: Add your code here
-    utils.raiseNotDefined()
+    
+    # stack se rige por Last In, First Out
+    stack = utils.Stack()
+    visitados = set()
+    
+    nodoInicial = problem.getStartState()
+    stack.push((nodoInicial, []))
+    
+    while not stack.isEmpty():
+        estadoActual, acciones = stack.pop()
+        
+        if problem.isGoalState(estadoActual):
+            return acciones
+        
+        if estadoActual not in visitados:
+            visitados.add(estadoActual)
+            
+        for siguienteEstado, accion, _ in problem.getSuccessors(estadoActual):
+            if siguienteEstado not in visitados:
+                agregarAccion = acciones + [accion]
+                stack.push((siguienteEstado, agregarAccion))
+
+    return []
+    
 
 
 def breadthFirstSearch(problem: SearchProblem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    # TODO: Add your code here
-    utils.raiseNotDefined()
+    
+    # queue se rige por First In, First Out
+    queue = utils.Queue()
+    visitados = set()
+    
+    nodoInicial = problem.getStartState()
+    queue.push((nodoInicial, []))
+    
+    while not queue.isEmpty():
+        estadoActual, acciones = queue.pop()
+        
+        if problem.isGoalState(estadoActual):
+            return acciones
+        
+        if estadoActual not in visitados:
+            visitados.add(estadoActual)
+
+        for siguienteEstado, accion, _ in problem.getSuccessors(estadoActual):
+            if siguienteEstado not in visitados:
+                agregarAccion = acciones + [accion]
+                queue.push((siguienteEstado, agregarAccion))
+                
+    return []
+
 
 
 def uniformCostSearch(problem: SearchProblem):
