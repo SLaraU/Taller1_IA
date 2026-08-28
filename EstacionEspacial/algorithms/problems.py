@@ -231,20 +231,25 @@ class ModuleRepairProblem(SearchProblem):
         return self.start
 
     def isGoalState(self, state):
-        """
-        Returns True if the robot reached C after picking up M.
-        """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
+        position, hasModule = state
+        if hasModule == True:
+            return position == self.controlPosition 
+        else :
+            return False
 
     def _getStepCost(self, nextPosition, hasModule):
         """
         Returns the movement cost for entering nextPosition.
 
         """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
-
+        x , y = nextPosition
+        baseCost = self.startingMissionState.getTerrainCost(x, y)
+        if hasModule == True:
+              baseCost *= 2
+        else:
+            baseCost = baseCost
+        return baseCost
+    
     def getSuccessors(self, state):
         """
         Returns a list of successors from the current state.
@@ -265,10 +270,29 @@ class ModuleRepairProblem(SearchProblem):
         - Once the robot is carrying M, movement costs twice the normal terrain cost.
         - The movement used to enter M still has normal terrain cost.
         """
-
         successors = []
         self._expanded += 1
-        # TODO: Add your code here
+
+        position, hasModule = state
+
+        for direction in [
+            Directions.NORTH,
+            Directions.SOUTH,
+            Directions.EAST,
+            Directions.WEST,
+        ]:
+            x, y = position
+            dx, dy = Actions.directionToVector(direction)
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            if not self.walls[nextx][nexty]:
+                nextPosition = (nextx, nexty)
+                nextHasModule = hasModule or nextPosition == self.modulePosition
+                stepCost = self._getStepCost(nextPosition, hasModule)
+
+                successors.append(
+                    ((nextPosition, nextHasModule), direction, stepCost)
+                )
 
         return successors
 
